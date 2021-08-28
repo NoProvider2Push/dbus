@@ -23,10 +23,9 @@ func (s Storage) NewApp(appID, token string) *AppToken {
 }
 
 type AppToken struct {
-	db          *gorm.DB
-	AppID       string
-	Token       string
-	PublicToken string
+	db *gorm.DB
+
+	AppID map[string]map[string]string
 }
 
 func (*AppToken) Add() {
