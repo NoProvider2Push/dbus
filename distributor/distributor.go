@@ -7,6 +7,8 @@ import (
 )
 
 type Distrib interface {
+	// return one of the three things for endpoint, refuse, failed respectively
+	// org.unifiedpush.Connector1.NewEndpoint is automatically called after this
 	Register(appName, token string) (endpoint, refuseReason string, err error)
 	Unregister(token string)
 }
