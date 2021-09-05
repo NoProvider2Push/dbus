@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // storagePaths provides a basic cache for StoragePath
@@ -34,4 +36,19 @@ func StoragePath(appName string) string {
 	finalFilename := filepath.Join(basedir, appName)
 	storagePaths[appName] = finalFilename
 	return finalFilename
+}
+
+var Log Logger
+
+type Logger struct {
+}
+
+func (Logger) Debugln(inps ...interface{}) {
+	if os.Getenv("UP_NP2P_DEBUG") == "true" || strings.HasPrefix(os.Args[0], "/tmp/go-build") {
+		log.Println(inps...)
+	}
+}
+
+func (Logger) Infoln(inps ...interface{}) {
+	log.Println(inps...)
 }

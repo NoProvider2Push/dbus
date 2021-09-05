@@ -10,6 +10,7 @@ import (
 	"github.com/karmanyaahm/np2p_linux/config"
 	"github.com/karmanyaahm/np2p_linux/distributor"
 	"github.com/karmanyaahm/np2p_linux/storage"
+	"github.com/karmanyaahm/np2p_linux/utils"
 )
 
 var store *storage.Storage
@@ -19,11 +20,12 @@ func main() {
 	store = storage.InitStorage("np2p")
 	config.Init("np2p")
 
-	dbus = distributor.NewDBus("org.unifiedpush.distributor.NP2P")
+	dbus = distributor.NewDBus("org.unifiedpush.Distributor.NP2P")
 
 	dbus.StartHandling(handler{})
 
 	http.HandleFunc("/", httpHandle)
+	utils.Log.Debugln("listening on", config.GetIPPort(), "with endpoints like", config.GetEndpointURL()+"/<token>", "...")
 	log.Fatal(http.ListenAndServe(config.GetIPPort(), nil))
 }
 
@@ -32,6 +34,8 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"unifiedpush" : {"version" : 1}}`)
 	} else if r.Method == http.MethodPost {
 		parts := strings.Split(r.URL.Path, "/")
+		utils.Log.Debugln("received request from", r.URL.Path)
+
 		var token string
 		if len(parts) > 0 {
 			token = parts[0]
@@ -56,6 +60,7 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 		//implement 429 counter
 
 		_ = dbus.NewConnector(conn.AppID).Message(conn.AppToken, string(body), "") //TODO errors
+		utils.Log.Infoln("MESSAGE", conn.AppID, conn.AppToken, "from", r.RemoteAddr)
 
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -67,14 +72,17 @@ type handler struct {
 
 func (h handler) Register(appName, token string) (endpoint, refuseReason string, err error) {
 	conn := store.NewConnection(appName, token)
+	utils.Log.Debugln("registered", conn)
 	if conn != nil {
-		return config.GetEndpointURL() + "?token=" + conn.PublicToken, "", nil
+		return config.GetEndpointURL() + "/" + conn.PublicToken, "", nil
 	}
 	//np2p doesn't have a situation for refuse
 	return "", "", errors.New("Unknown error with NoProvider2Push")
 }
 func (h handler) Unregister(token string) {
 	deletedConn, err := store.DeleteConnection(token)
+	utils.Log.Debugln("deleted", deletedConn)
+
 	if err != nil {
 		//?????
 	}
