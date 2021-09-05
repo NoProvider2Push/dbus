@@ -14,21 +14,24 @@ func StoragePath(appName string) string {
 		return a
 	}
 
-	basedir := os.Getenv("XDG_CONFIG_HOME")
+	basedir := os.Getenv("NP2P_STORAGE_PATH")
 	if len(basedir) == 0 {
-		basedir = os.Getenv("HOME")
+		basedir = os.Getenv("XDG_CONFIG_HOME")
 		if len(basedir) == 0 {
-			basedir = "./" // FIXME: set to cwd if dunno wth is going on
+			basedir = os.Getenv("HOME")
+			if len(basedir) == 0 {
+				basedir = "./" // FIXME: set to cwd if dunno wth is going on
+			}
+			basedir = filepath.Join(basedir, ".config")
 		}
-		basedir = filepath.Join(basedir, ".config")
+		basedir = filepath.Join(basedir, "unifiedpush", "distributors")
+		err := os.MkdirAll(basedir, 0o700)
+		if err != nil {
+			basedir = "./"
+			// FIXME idk wth to do when there's an error here
+		}
 	}
-	basedir = filepath.Join(basedir, "unifiedpush", "distributors")
-	err := os.MkdirAll(basedir, 0o700)
-	if err != nil {
-		basedir = "./"
-		// FIXME idk wth to do when there's an error here
-	}
-	finalFilename := filepath.Join(basedir, appName+".db")
+	finalFilename := filepath.Join(basedir, appName)
 	storagePaths[appName] = finalFilename
 	return finalFilename
 }

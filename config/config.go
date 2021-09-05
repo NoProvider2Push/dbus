@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/karmanyaahm/np2p_linux/utils"
 	"gopkg.in/ini.v1"
 )
 
@@ -18,7 +19,7 @@ type conf struct {
 type application = map[string]string
 
 func Init() {
-	cfg, err := ini.Load("./np2p.conf")
+	cfg, err := ini.Load(utils.StoragePath("np2p.conf"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,15 +29,11 @@ func Init() {
 
 	secs := cfg.Sections()
 	secs[0].MapTo(&c)
-	c.Apps = map[string]application{}
-	for _, i := range secs[1:] {
-		c.Apps[i.Name()] = i.KeysHash()
-	}
 
 	defaults(&c)
 
 	_ = secs[0].ReflectFrom(&c)
-	_ = cfg.SaveTo("./np2p.conf")
+	_ = cfg.SaveTo(utils.StoragePath("np2p.conf"))
 }
 
 func defaults(c *conf) {
@@ -51,7 +48,7 @@ func defaults(c *conf) {
 	}
 
 	if c.Port == nil {
-		p := 51515
+		p := 30043
 		c.Port = &p
 	}
 

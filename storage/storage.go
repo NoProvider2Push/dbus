@@ -8,7 +8,7 @@ import (
 )
 
 func InitStorage(name string) *Storage {
-	db, err := gorm.Open(sqlite.Open(utils.StoragePath("np2p")), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(utils.StoragePath("np2p.db")), &gorm.Config{})
 	if err != nil {
 		log.Fataln("failed to connect database")
 	}
