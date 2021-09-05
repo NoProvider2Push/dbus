@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"io/fs"
 	"log"
 	"net"
 	"strconv"
@@ -35,7 +37,12 @@ type application = map[string]string
 func Init(name string) {
 	cfg, err := ini.Load(utils.StoragePath(name + ".conf"))
 	if err != nil {
-		log.Fatal(err)
+		if errors.Is(err, fs.ErrNotExist) {
+			utils.Log.Infoln("config file doesn't exist, creating")
+			cfg = ini.Empty()
+		} else {
+			log.Fatal("error loading config file from", utils.StoragePath(name+".conf"), err)
+		}
 	}
 
 	c = conf{}
