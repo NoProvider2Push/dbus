@@ -22,7 +22,7 @@ func (d Distributor) Register(name, token string) (thing, reason string, err *db
 	return "REGISTRATION_FAILED", "unimpl", nil
 }
 
-func (d Distributor) Unregister(name string) *dbus.Error {
+func (d Distributor) Unregister(token string) *dbus.Error {
 	return nil
 }
 
