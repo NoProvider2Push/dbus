@@ -31,7 +31,7 @@ func (d *DBus) StartHandling(handler Distrib) (err error) {
 		return err
 	}
 
-	err = d.client.Export(&dBusDistrib{handler: handler}, "/org/unifiedpush/Distributor", "org.unifiedpush.Distributor1")
+	err = d.client.Export(&dBusDistrib{handler: handler, dbus: *d}, "/org/unifiedpush/Distributor", "org.unifiedpush.Distributor1")
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (d DBus) Close() error {
 	return nil
 }
 
-func (d DBus) NewConector(appid string) *Connector {
+func (d DBus) NewConnector(appid string) *Connector {
 	obj := d.client.Object(appid, "/org/unifiedpush/Connector")
 	return &Connector{
 		obj: obj,
@@ -60,6 +60,7 @@ func (d DBus) NewConector(appid string) *Connector {
 
 type dBusDistrib struct {
 	handler Distrib
+	dbus    DBus
 }
 
 func (d dBusDistrib) Register(appid, token string) (thing, reason string, err *dbus.Error) {
@@ -69,6 +70,10 @@ func (d dBusDistrib) Register(appid, token string) (thing, reason string, err *d
 	}
 	if refused != "" {
 		return "REGISTRATION_REFUSED", refused, nil
+	}
+	errr = d.dbus.NewConnector(appid).NewEndpoint(token, endpoint)
+	if errr != nil {
+		//TODO should this be an error??? will handle later
 	}
 	return "NEW_ENDPOINT", endpoint, nil
 }
