@@ -18,8 +18,8 @@ type conf struct {
 //                  public id - private id
 type application = map[string]string
 
-func Init() {
-	cfg, err := ini.Load(utils.StoragePath("np2p.conf"))
+func Init(name string) {
+	cfg, err := ini.Load(utils.StoragePath(name + ".conf"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func Init() {
 	defaults(&c)
 
 	_ = secs[0].ReflectFrom(&c)
-	_ = cfg.SaveTo(utils.StoragePath("np2p.conf"))
+	_ = cfg.SaveTo(utils.StoragePath(name + ".conf"))
 }
 
 func defaults(c *conf) {

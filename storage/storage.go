@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"log"
+
 	"github.com/google/uuid"
 	"github.com/karmanyaahm/np2p_linux/utils"
 	"gorm.io/driver/sqlite"
@@ -8,9 +10,9 @@ import (
 )
 
 func InitStorage(name string) *Storage {
-	db, err := gorm.Open(sqlite.Open(utils.StoragePath("np2p.db")), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(utils.StoragePath(name+".db")), &gorm.Config{})
 	if err != nil {
-		log.Fataln("failed to connect database")
+		log.Fatalln("failed to connect database")
 	}
 
 	// Migrate the schema
