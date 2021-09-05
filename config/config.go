@@ -10,6 +10,9 @@ import (
 )
 
 func GetEndpointURL() string {
+	if *c.ProxyURL == "direct" {
+		return "http://" + GetIPPort()
+	}
 	return *c.ProxyURL + "/" + GetIPPort()
 }
 
@@ -64,6 +67,7 @@ func defaults(c *conf) {
 	}
 
 	if c.ProxyURL == nil {
+		// TODO URL format checking // (*c.ProxyURL == "direct" || url.Parse(*c.ProxyURL))
 		log.Fatalln("Need a proxy url, TODO setup a public one")
 	}
 }
