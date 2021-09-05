@@ -34,12 +34,12 @@ func (d Distributor) Unregister(token string) *dbus.Error {
 func (d DBus) NewConector(appid string) *Connector {
 	obj := d.client.Object(appid, "/org/unifiedpush/Connector")
 	return &Connector{
-		obj: &obj,
+		obj: obj,
 	}
 }
 
 type Connector struct {
-	obj *dbus.BusObject
+	obj dbus.BusObject
 }
 
 func (c Connector) Message(token, contents, id string) error {
