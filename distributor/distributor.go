@@ -1,33 +1,53 @@
 package distributor
 
-import "github.com/godbus/dbus"
+import (
+	"errors"
+
+	"github.com/godbus/dbus/v5"
+)
+
+type Distrib interface {
+	Register(appName, token string) (endpoint, refuseReason string, err error)
+	Unregister(token string)
+}
+
+func NewDBus(distName string) *DBus {
+	//register on bus
+	return &DBus{
+		name: distName,
+	}
+}
 
 type DBus struct {
 	client *dbus.Conn
-}
-
-func (d DBus) NewDistributor(distName string) *Distributor {
-	//register on bus
-	return &Distributor{
-		client: d,
-		name:   distName,
-	}
-}
-
-type Distributor struct {
-	client DBus
 	name   string
 }
 
-func (d Distributor) Register(appid, token string) (thing, reason string, err *dbus.Error) {
-	c := d.client.NewConnector(appid)
-	if err := c.NewEndpoint(token, "http://.../UP?token="+token); err != nil {
-		return "REGISTRATION_FAILED", err.Error(), nil
+// StartHandling exports the distributor interface and requests the app's name on the bus
+func (d *DBus) StartHandling(handler Distrib) (err error) {
+
+	d.client, err = dbus.ConnectSessionBus()
+	if err != nil {
+		return err
 	}
-	return "NEW_ENDPOINT", "", nil
+
+	err = d.client.Export(&dBusDistrib{handler: handler}, "/org/unifiedpush/Distributor", "org.unifiedpush.Distributor1")
+	if err != nil {
+		return err
+	}
+
+	name, err := d.client.RequestName(d.name, dbus.NameFlagDoNotQueue)
+	if err != nil {
+		return err
+	}
+	if name != dbus.RequestNameReplyPrimaryOwner {
+		return errors.New("Cannot request name on dbus")
+	}
+
+	return nil
 }
 
-func (d Distributor) Unregister(token string) *dbus.Error {
+func (d DBus) Close() error {
 	return nil
 }
 
@@ -36,6 +56,26 @@ func (d DBus) NewConector(appid string) *Connector {
 	return &Connector{
 		obj: obj,
 	}
+}
+
+type dBusDistrib struct {
+	handler Distrib
+}
+
+func (d dBusDistrib) Register(appid, token string) (thing, reason string, err *dbus.Error) {
+	endpoint, refused, errr := d.handler.Register(appid, token)
+	if errr != nil {
+		return "REGISTRATION_FAILED", errr.Error(), nil
+	}
+	if refused != "" {
+		return "REGISTRATION_REFUSED", refused, nil
+	}
+	return "NEW_ENDPOINT", endpoint, nil
+}
+
+func (d dBusDistrib) Unregister(token string) *dbus.Error {
+	d.handler.Unregister(token)
+	return nil
 }
 
 type Connector struct {
