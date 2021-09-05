@@ -38,13 +38,19 @@ func (s Storage) NewConnection(appID, token string) *Connection {
 	return &c
 }
 
-func (s Storage) DeleteConnection(appID, token string) error {
-	result := s.db.Delete(&Connection{AppID: appID, AppToken: token})
-	return result.Error
+func (s Storage) DeleteConnection(token string) (*Connection, error) {
+	c := Connection{AppToken: token}
+	conn := s.getFirst(c)
+	result := s.db.Delete(&c)
+	return conn, result.Error
 }
 
 func (s Storage) GetConnectionbyPublic(publicToken string) *Connection {
-	c := Connection{}
+	c := Connection{PublicToken: publicToken}
+	return s.getFirst(c)
+}
+
+func (s Storage) getFirst(c Connection) *Connection {
 	result := s.db.First(&c)
 	if result.Error != nil || result.RowsAffected == 0 {
 		return nil
@@ -56,6 +62,6 @@ type Connection struct {
 	db *gorm.DB
 
 	AppID       string `gorm:"primaryKey"`
-	AppToken    string `gorm:"primaryKey"`
+	AppToken    string `gorm:"primaryKey;unique"`
 	PublicToken string `gorm:"unique"`
 }

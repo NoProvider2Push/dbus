@@ -3,10 +3,21 @@ package config
 import (
 	"log"
 	"net"
+	"strconv"
 
 	"github.com/karmanyaahm/np2p_linux/utils"
 	"gopkg.in/ini.v1"
 )
+
+func GetEndpointURL() string {
+	return *c.ProxyURL + "/" + GetIPPort()
+}
+
+func GetIPPort() string {
+	return net.JoinHostPort(*c.IP, strconv.Itoa(*c.Port))
+}
+
+var c conf
 
 type conf struct {
 	IP   *string
@@ -24,7 +35,7 @@ func Init(name string) {
 		log.Fatal(err)
 	}
 
-	c := conf{}
+	c = conf{}
 	cfg.Section("").MapTo(c)
 
 	secs := cfg.Sections()
