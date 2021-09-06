@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	"github.com/karmanyaahm/np2p_linux/utils"
+	"unifiedpush.org/go/np2p_dbus/utils"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

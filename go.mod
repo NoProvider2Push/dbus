@@ -1,4 +1,4 @@
-module github.com/karmanyaahm/np2p_linux
+module unifiedpush.org/go/np2p_dbus
 
 go 1.16
 
