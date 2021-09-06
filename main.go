@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/karmanyaahm/np2p_linux/config"
-	"github.com/karmanyaahm/np2p_linux/distributor"
-	"github.com/karmanyaahm/np2p_linux/storage"
-	"github.com/karmanyaahm/np2p_linux/utils"
+	"unifiedpush.org/go/np2p_dbus/config"
+	"unifiedpush.org/go/np2p_dbus/distributor"
+	"unifiedpush.org/go/np2p_dbus/storage"
+	"unifiedpush.org/go/np2p_dbus/utils"
 )
 
 var store *storage.Storage

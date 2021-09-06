@@ -30,3 +30,7 @@ Roadmap:
 ## Library
 
 The distributor package can be used as a module in your own distributor if you wish. Other parts like config and storage can also be copied with the appropriate license. NP2P is usually the 'example distributor' in UnifiedPush due to its simplicity.
+
+```sh
+go get -u unifiedpush.org/go/np2p_dbus
+```

@@ -7,7 +7,7 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/karmanyaahm/np2p_linux/utils"
+	"unifiedpush.org/go/np2p_dbus/utils"
 	"gopkg.in/ini.v1"
 )
 
