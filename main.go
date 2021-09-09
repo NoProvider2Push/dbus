@@ -24,9 +24,20 @@ func main() {
 
 	dbus.StartHandling(handler{})
 
+	go handleEndpointSettingsChanges()
+
 	http.HandleFunc("/", httpHandle)
 	utils.Log.Debugln("listening on", config.GetIPPort(), "with endpoints like", config.GetEndpointURL("<token>"), "...")
 	log.Fatal(http.ListenAndServe(config.GetIPPort(), nil))
+}
+
+func handleEndpointSettingsChanges() {
+	for _, i := range store.GetUnequalEndpoint(config.GetEndpointURL("<token>")) {
+		utils.Log.Debugln("new endpoint format for", i.AppID, i.AppToken)
+		i, _ = store.DeleteConnection(i.AppToken)
+		i = store.NewConnection(i.AppID, i.AppToken, config.GetEndpointURL("<token>"))
+		dbus.NewConnector(i.AppID).NewEndpoint(i.AppToken, config.GetEndpointURL(i.PublicToken))
+	}
 }
 
 func httpHandle(w http.ResponseWriter, r *http.Request) {
