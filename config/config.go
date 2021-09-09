@@ -7,8 +7,8 @@ import (
 	"net"
 	"strconv"
 
-	"unifiedpush.org/go/np2p_dbus/utils"
 	"gopkg.in/ini.v1"
+	"unifiedpush.org/go/np2p_dbus/utils"
 )
 
 func GetEndpointURL(token string) string {

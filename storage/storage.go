@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	"unifiedpush.org/go/np2p_dbus/utils"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"unifiedpush.org/go/np2p_dbus/utils"
 )
 
 func InitStorage(name string) *Storage {
