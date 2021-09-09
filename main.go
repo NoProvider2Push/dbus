@@ -71,7 +71,7 @@ type handler struct {
 }
 
 func (h handler) Register(appName, token string) (endpoint, refuseReason string, err error) {
-	conn := store.NewConnection(appName, token)
+	conn := store.NewConnection(appName, token, config.GetEndpointURL("<token>"))
 	utils.Log.Debugln("registered", conn)
 	if conn != nil {
 		return config.GetEndpointURL(conn.PublicToken), "", nil

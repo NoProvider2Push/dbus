@@ -24,12 +24,13 @@ type Storage struct {
 	db *gorm.DB
 }
 
-func (s Storage) NewConnection(appID, token string) *Connection {
+func (s Storage) NewConnection(appID, token string, endpoint string) *Connection {
 	c := Connection{
 		db:          s.db,
 		AppID:       appID,
 		AppToken:    token,
 		PublicToken: uuid.New().String(),
+		Endpoint:    endpoint,
 	}
 	result := s.db.Create(&c)
 	if result.Error != nil {
@@ -50,6 +51,15 @@ func (s Storage) GetConnectionbyPublic(publicToken string) *Connection {
 	return s.getFirst(c)
 }
 
+func (s Storage) GetUnequalEndpoint(latestEndpoint string) (ans []*Connection) {
+	result := s.db.Find(&ans, "endpoint IS NOT ?", latestEndpoint)
+	if result.Error != nil {
+		return nil
+	}
+	return ans
+
+}
+
 func (s Storage) getFirst(c Connection) *Connection {
 	result := s.db.First(&c)
 	if result.Error != nil || result.RowsAffected == 0 {
@@ -61,7 +71,9 @@ func (s Storage) getFirst(c Connection) *Connection {
 type Connection struct {
 	db *gorm.DB
 
-	AppID       string `gorm:"primaryKey"`
-	AppToken    string `gorm:"primaryKey;unique"`
+	AppID       string
+	AppToken    string `gorm:"primaryKey"`
 	PublicToken string `gorm:"unique"`
+	// endpoint format, to keep track of settings changes
+	Endpoint string
 }
