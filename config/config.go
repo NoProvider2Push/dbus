@@ -11,11 +11,11 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-func GetEndpointURL() string {
+func GetEndpointURL(token string) string {
 	if *c.ProxyURL == "direct" {
-		return "http://" + GetIPPort()
+		return "http://" + GetIPPort() + "/" + token
 	}
-	return *c.ProxyURL + "/" + GetIPPort()
+	return *c.ProxyURL + "/" + GetIPPort() + "/" + token
 }
 
 func GetIPPort() string {

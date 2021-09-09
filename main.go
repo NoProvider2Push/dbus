@@ -25,7 +25,7 @@ func main() {
 	dbus.StartHandling(handler{})
 
 	http.HandleFunc("/", httpHandle)
-	utils.Log.Debugln("listening on", config.GetIPPort(), "with endpoints like", config.GetEndpointURL()+"/<token>", "...")
+	utils.Log.Debugln("listening on", config.GetIPPort(), "with endpoints like", config.GetEndpointURL("<token>"), "...")
 	log.Fatal(http.ListenAndServe(config.GetIPPort(), nil))
 }
 
@@ -74,7 +74,7 @@ func (h handler) Register(appName, token string) (endpoint, refuseReason string,
 	conn := store.NewConnection(appName, token)
 	utils.Log.Debugln("registered", conn)
 	if conn != nil {
-		return config.GetEndpointURL() + "/" + conn.PublicToken, "", nil
+		return config.GetEndpointURL(conn.PublicToken), "", nil
 	}
 	//np2p doesn't have a situation for refuse
 	return "", "", errors.New("Unknown error with NoProvider2Push")
