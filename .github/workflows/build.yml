@@ -1,19 +1,21 @@
-name: CI
-
-on: [push, workflow_dispatch]
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
     runs-on: ubuntu-18.04
-    container: archlinux:base-devel
     steps:
-    - uses: actions/checkout@v1
-    - name: s
-      run: |
-        useradd -m -s /bin/sh builder
-        pacman -Syu sudo --noconfirm --needed
-        echo 'builder ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-        chmod ugo+rwx .
-        echo 'ParallelDownloads=5' >> /etc/pacman.conf
-        sudo -u builder make archlinux-deps-prod build-prod
-
+    - uses: actions/checkout@v2
+    - uses: docker://archlinux:base-devel
+      with: 
+        args: make arch-container-init
+    - name: Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: "bin/*"
+        tag: ${{ github.ref }}
+        file_glob: true
