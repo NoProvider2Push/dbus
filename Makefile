@@ -11,7 +11,7 @@ archlinux-deps-init:
 	sudo pacman -Syu --needed --noconfirm git base-devel
 	git clone https://aur.archlinux.org/yay-bin.git
 	cd yay-bin
-	sudo -u nobody makepkg -si
+	makepkg -si
 	make arch-linux-deps
 archlinux-deps:
 	yay --noconfirm --needed -S aarch64-linux-gnu-gcc musl aarch64-linux-musl
