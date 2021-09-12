@@ -8,11 +8,12 @@ build-prod:
 archlinux-deps-prod: archlinux-deps-init archlinux-deps
 
 archlinux-deps-init:
-	sudo pacman -Syu --needed --noconfirm git base-devel
+	sudo pacman -Syu --needed --noconfirm git base-devel tmate
 	git clone https://aur.archlinux.org/yay-bin.git
 	mkdir -p ~/Downloads
 	cd ~/Downloads
 	cd yay-bin
+	tmate
 	makepkg -si
 	make arch-linux-deps
 	cd -
