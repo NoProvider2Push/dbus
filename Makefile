@@ -10,8 +10,11 @@ archlinux-deps-prod: archlinux-deps-init archlinux-deps
 archlinux-deps-init:
 	sudo pacman -Syu --needed --noconfirm git base-devel
 	git clone https://aur.archlinux.org/yay-bin.git
+	mkdir -p ~/Downloads
+	cd ~/Downloads
 	cd yay-bin
 	makepkg -si
 	make arch-linux-deps
+	cd -
 archlinux-deps:
-	yay --noconfirm --needed -S aarch64-linux-gnu-gcc musl aarch64-linux-musl
+	yay --noconfirm --needed -S aarch64-linux-gnu-gcc musl aarch64-linux-musl go
