@@ -14,6 +14,5 @@ jobs:
         pacman -Syu sudo --noconfirm --needed
         echo 'builder ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
         chmod ugo+rwx .
-        chmod ugo+rw . -R
         sudo -u builder make archlinux-deps-prod build-prod
 
