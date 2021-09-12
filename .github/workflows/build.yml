@@ -13,6 +13,8 @@ jobs:
         useradd -m -s /bin/sh builder
         pacman -S sudo --noconfirm --needed
         echo 'builder ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+        id
         su builder
+        id
         make archlinux-deps-prod build-prod
 

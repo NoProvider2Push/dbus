@@ -8,9 +8,12 @@ build-prod:
 archlinux-deps-prod: archlinux-deps-init archlinux-deps
 
 archlinux-deps-init:
+	id
 	sudo pacman -Syu --needed --noconfirm git base-devel
+	id
 	git clone https://aur.archlinux.org/yay-bin.git
 	cd yay-bin
+	id
 	makepkg -si
 	make arch-linux-deps
 archlinux-deps:
