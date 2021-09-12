@@ -5,10 +5,9 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-18.04
+    container: archlinux:base-devel
     steps:
     - uses: actions/checkout@v1
-    - name: Install Archlinux
-      run: curl -L https://github.com/zaoqi/github-actions-archlinux/raw/master/install.sh | sh
     - name: s
       run: |
         make archlinux-deps-prod build-prod
