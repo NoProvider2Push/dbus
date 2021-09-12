@@ -10,5 +10,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: s
       run: |
+        useradd -m -G wheel -s /bin/sh builder
+        su builder
         make archlinux-deps-prod build-prod
 
