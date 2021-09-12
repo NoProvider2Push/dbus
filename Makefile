@@ -16,4 +16,5 @@ archlinux-deps-init:
 		cd yay-bin; \
 		makepkg -si --noconfirm
 archlinux-deps:
-	yay --noconfirm --needed -S aarch64-linux-gnu-gcc musl aarch64-linux-musl go
+	#                           aarch64 gnu -      amd64 alpine - aarch64 alpine - 32bit gnu - 32 bit gnu - go
+	yay --noconfirm --needed -S aarch64-linux-gnu-gcc musl aarch64-linux-musl lib32-glibc lib32-gcc-libs go
