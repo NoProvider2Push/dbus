@@ -28,6 +28,10 @@ func (s Storage) NewConnection(appID, token string, endpoint string) *Connection
 func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoint string) *Connection {
 	existing := s.getFirst(Connection{AppID: appID, AppToken: token})
 	if existing != nil {
+		existing.Endpoint = endpoint
+		if err := s.db.Save(existing).Error; err != nil {
+			return nil
+		}
 		return existing
 	}
   
