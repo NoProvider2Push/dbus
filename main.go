@@ -17,7 +17,10 @@ var store *storage.Storage
 var dbus *distributor.DBus
 
 func main() {
-	store = storage.InitStorage("np2p")
+	var err error
+	if store, err = storage.InitStorage(utils.StoragePath("np2p.db")); err != nil {
+		log.Fatalln("failed to connect database")
+	}
 	config.Init("np2p")
 
 	dbus = distributor.NewDBus("org.unifiedpush.Distributor.NP2P")

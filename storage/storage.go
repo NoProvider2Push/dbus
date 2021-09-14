@@ -1,23 +1,20 @@
 package storage
 
 import (
-	"log"
-
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"unifiedpush.org/go/np2p_dbus/utils"
 )
 
-func InitStorage(name string) *Storage {
-	db, err := gorm.Open(sqlite.Open(utils.StoragePath(name+".db")), &gorm.Config{})
+func InitStorage(filepath string) (*Storage, error) {
+	db, err := gorm.Open(sqlite.Open(filepath), &gorm.Config{})
 	if err != nil {
-		log.Fatalln("failed to connect database")
+		return nil, err
 	}
 
 	// Migrate the schema
 	db.AutoMigrate(&Connection{})
-	return &Storage{db: db}
+	return &Storage{db: db}, nil
 }
 
 type Storage struct {
