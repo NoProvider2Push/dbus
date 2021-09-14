@@ -23,7 +23,6 @@ type Storage struct {
 
 func (s Storage) NewConnection(appID, token string, endpoint string) *Connection {
 	c := Connection{
-		db:          s.db,
 		AppID:       appID,
 		AppToken:    token,
 		PublicToken: uuid.New().String(),
@@ -66,8 +65,6 @@ func (s Storage) getFirst(c Connection) *Connection {
 }
 
 type Connection struct {
-	db *gorm.DB
-
 	AppID       string
 	AppToken    string `gorm:"primaryKey"`
 	PublicToken string `gorm:"unique"`
