@@ -22,9 +22,21 @@ type Storage struct {
 }
 
 func (s Storage) NewConnection(appID, token string, endpoint string) *Connection {
+
 	return s.NewConnectionWithToken(appID, token, uuid.New().String(), endpoint)
 }
 func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoint string) *Connection {
+	existing := s.getFirst(Connection{AppID: appID, AppToken: token})
+	if existing != nil {
+		return existing
+	}
+  
+  existing = s.getFirst(Connection{PublicToken: publicToken})
+	if existing != nil {
+		return nil
+	}
+
+	//create new if doesn't already exist
 	c := Connection{
 		AppID:       appID,
 		AppToken:    token,
@@ -51,7 +63,7 @@ func (s Storage) GetConnectionbyPublic(publicToken string) *Connection {
 }
 
 func (s Storage) GetUnequalEndpoint(latestEndpoint string) (ans []*Connection) {
-	result := s.db.Debug().Find(&ans, "endpoint IS NOT ?", latestEndpoint)
+	result := s.db.Find(&ans, "endpoint IS NOT ?", latestEndpoint)
 	if result.Error != nil {
 		return nil
 	}
