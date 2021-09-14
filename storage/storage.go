@@ -22,10 +22,13 @@ type Storage struct {
 }
 
 func (s Storage) NewConnection(appID, token string, endpoint string) *Connection {
+	return s.NewConnectionWithToken(appID, token, uuid.New().String(), endpoint)
+}
+func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoint string) *Connection {
 	c := Connection{
 		AppID:       appID,
 		AppToken:    token,
-		PublicToken: uuid.New().String(),
+		PublicToken: publicToken,
 		Endpoint:    endpoint,
 	}
 	result := s.db.Create(&c)
