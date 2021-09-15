@@ -76,7 +76,7 @@ func (s Storage) GetUnequalEndpoint(latestEndpoint string) (ans []*Connection) {
 }
 
 func (s Storage) getFirst(c Connection) *Connection {
-	result := s.db.First(&c)
+	result := s.db.Where(&c).First(&c)
 	if result.Error != nil || result.RowsAffected == 0 {
 		return nil
 	}
