@@ -20,6 +20,50 @@ func TestInit(t *testing.T) {
 	assert.NotNil(db)
 }
 
+func TestNewConnectionWithGeneratedToken(t *testing.T) {
+	assert := assert.New(t)
+
+	db, err := InitStorage(STORAGE_PATH)
+	assert.NoError(err)
+
+	appID := "app-1"
+	appToken := "apptoken-2"
+	endpoint := "<endpoint>"
+
+	conn := db.NewConnection(appID, appToken, endpoint)
+	assert.NotNil(conn)
+	// be sure that PublicToken is no given value
+	assert.NotEqual("", conn.PublicToken)
+	assert.NotEqual(appID, conn.PublicToken)
+	assert.NotEqual(appToken, conn.PublicToken)
+	assert.NotEqual(endpoint, conn.PublicToken)
+
+	// that everythink else is given
+	assert.Equal(appID, conn.AppID)
+	assert.Equal(appToken, conn.AppToken)
+	assert.Equal(endpoint, conn.Endpoint)
+}
+
+func TestNewConnectionCollision(t *testing.T) {
+	assert := assert.New(t)
+
+	db, err := InitStorage(STORAGE_PATH)
+	assert.NoError(err)
+
+	appID := "app-1"
+	publicToken := "public-token-2"
+	endpoint := "<endpoint>"
+
+	// create connection
+	conn := db.NewConnectionWithToken(appID, "app-token-1", publicToken, endpoint)
+	assert.NotNil(conn)
+
+	// collision is nil
+	conn = db.NewConnectionWithToken(appID, "app-token-2", publicToken, endpoint)
+	assert.Nil(conn)
+
+}
+
 func TestNewConnectionUpdateEndpoint(t *testing.T) {
 	assert := assert.New(t)
 
@@ -27,7 +71,7 @@ func TestNewConnectionUpdateEndpoint(t *testing.T) {
 	assert.NoError(err)
 
 	appID := "app-1"
-	appToken := "app-2"
+	appToken := "apptoken-2"
 	publicToken := "public-token-2"
 	oldEndpoint := "endpoint-1"
 	newEndpoint := "endpoint-2"

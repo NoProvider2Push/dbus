@@ -16,7 +16,7 @@ func InitStorage(filepath string) (*Storage, error) {
 
 	// Migrate the schema
 	db.AutoMigrate(&Connection{})
-	return &Storage{db: db.Debug()}, nil
+	return &Storage{db: db}, nil
 }
 
 type Storage struct {
@@ -37,6 +37,8 @@ func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoi
 		return existing
 	}
 
+	// check if connection with this publicToken already exists
+	// for pretend collision by with different app id and app token
 	existing = s.getFirst(Connection{PublicToken: publicToken})
 	if existing != nil {
 		return nil
