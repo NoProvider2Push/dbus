@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -57,6 +59,9 @@ func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoi
 func (s Storage) DeleteConnection(token string) (*Connection, error) {
 	c := Connection{AppToken: token}
 	conn := s.getFirst(c)
+	if conn == nil {
+		return nil, errors.New("connection not found")
+	}
 	result := s.db.Delete(&c)
 	return conn, result.Error
 }
