@@ -34,8 +34,8 @@ func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoi
 		}
 		return existing
 	}
-  
-  existing = s.getFirst(Connection{PublicToken: publicToken})
+
+	existing = s.getFirst(Connection{PublicToken: publicToken})
 	if existing != nil {
 		return nil
 	}
