@@ -14,7 +14,7 @@ func InitStorage(filepath string) (*Storage, error) {
 
 	// Migrate the schema
 	db.AutoMigrate(&Connection{})
-	return &Storage{db: db}, nil
+	return &Storage{db: db.Debug()}, nil
 }
 
 type Storage struct {

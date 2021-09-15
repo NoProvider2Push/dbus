@@ -20,6 +20,34 @@ func TestInit(t *testing.T) {
 	assert.NotNil(db)
 }
 
+func TestNewConnectionUpdateEndpoint(t *testing.T) {
+	assert := assert.New(t)
+
+	db, err := InitStorage(STORAGE_PATH)
+	assert.NoError(err)
+
+	appID := "app-1"
+	appToken := "app-2"
+	publicToken := "public-token-2"
+	oldEndpoint := "endpoint-1"
+	newEndpoint := "endpoint-2"
+
+	// create connection
+	conn := db.NewConnectionWithToken(appID, appToken, publicToken, oldEndpoint)
+	assert.NotNil(conn)
+	conn = db.getFirst(Connection{AppID: appID, AppToken: appToken})
+	assert.NotNil(conn)
+	assert.Equal(oldEndpoint, conn.Endpoint)
+
+	// save new endpoint on connection
+	db.NewConnectionWithToken(appID, appToken, publicToken, newEndpoint)
+	assert.NotNil(conn)
+	conn = db.getFirst(Connection{AppID: appID, AppToken: appToken})
+	assert.NotNil(conn)
+	assert.Equal(newEndpoint, conn.Endpoint)
+
+}
+
 func TestGetConnectionbyPublic(t *testing.T) {
 	assert := assert.New(t)
 
@@ -28,9 +56,35 @@ func TestGetConnectionbyPublic(t *testing.T) {
 
 	publicToken := "public-token-2"
 
-	db.NewConnectionWithToken("appid-1", "apptoken-1", "public-token-1", "<token>")
-	db.NewConnectionWithToken("appid-1", "apptoken-2", publicToken, "<token>")
+	// create multiple connection
+	db.NewConnectionWithToken("appid-1", "apptoken-1", "public-token-1", "<endpoint>")
+	db.NewConnectionWithToken("appid-1", "apptoken-2", publicToken, "<endpoint>")
+	db.NewConnectionWithToken("appid-1", "apptoken-3", "public-token-3", "<endpoint>")
 
+	// find correct connection by public token
 	conn := db.GetConnectionbyPublic(publicToken)
 	assert.Equal(publicToken, conn.PublicToken)
+}
+
+func TestDeleteConnection(t *testing.T) {
+	assert := assert.New(t)
+
+	db, err := InitStorage(STORAGE_PATH)
+	assert.NoError(err)
+
+	appToken := "apptoken-2"
+
+	// create multiple connection
+	db.NewConnectionWithToken("appid-1", "apptoken-1", "public-token-1", "<endpoint>")
+	db.NewConnectionWithToken("appid-1", appToken, "public-token-2", "<endpoint>")
+	db.NewConnectionWithToken("appid-1", "apptoken-3", "public-token-3", "<endpoint>")
+
+	// find correct connection by app token to delete
+	conn, err := db.DeleteConnection(appToken)
+	assert.NoError(err)
+	assert.Equal(appToken, conn.AppToken)
+
+	// unable to delete connection does not exists anymore
+	conn, err = db.DeleteConnection(appToken)
+	assert.Error(err)
 }
