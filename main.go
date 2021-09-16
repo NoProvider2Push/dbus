@@ -35,9 +35,9 @@ func main() {
 }
 
 func handleEndpointSettingsChanges() {
-	for _, i := range store.GetUnequalEndpoint(config.GetEndpointURL("<token>")) {
+	for _, i := range store.GetUnequalSettings(config.GetEndpointURL("<token>")) {
 		utils.Log.Debugln("new endpoint format for", i.AppID, i.AppToken)
-		i, _ = store.DeleteConnection(i.AppToken)
+		//newconnection updates the endpoint settings when one already exists
 		i = store.NewConnection(i.AppID, i.AppToken, config.GetEndpointURL("<token>"))
 		dbus.NewConnector(i.AppID).NewEndpoint(i.AppToken, config.GetEndpointURL(i.PublicToken))
 	}
