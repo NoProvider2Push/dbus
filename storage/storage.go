@@ -6,10 +6,13 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func InitStorage(filepath string) (*Storage, error) {
-	db, err := gorm.Open(sqlite.Open(filepath), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(filepath), &gorm.Config{
+		Logger: logger.Default.LogMode(0),
+	})
 	if err != nil {
 		return nil, err
 	}
