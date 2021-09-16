@@ -26,44 +26,21 @@ type Storage struct {
 	db *gorm.DB
 }
 
-func (s Storage) DB() *gorm.DB {
-	return s.db
-}
-
-func (s Storage) NewConnection(appID, token string, settings string) *Connection {
-	existing := s.getFirst(Connection{AppID: appID, AppToken: token})
+func (s Storage) NewConnection(appID, appToken string, settings string) *Connection {
+	existing := s.getFirst(Connection{AppID: appID, AppToken: appToken})
 	if existing != nil {
 		existing.Settings = settings
 		if err := s.db.Save(existing).Error; err != nil {
 			return nil
 		}
 		return existing
-	}
-	return s.NewConnectionWithToken(appID, token, uuid.New().String(), settings)
-}
-func (s Storage) NewConnectionWithToken(appID, token string, publicToken, settings string) *Connection {
-	existing := s.getFirst(Connection{AppID: appID, AppToken: token})
-	if existing != nil {
-		existing.PublicToken = publicToken
-		existing.Settings = settings
-		if err := s.db.Save(existing).Error; err != nil {
-			return nil
-		}
-		return existing
-	}
-
-	// check if connection with this publicToken already exists
-	// for pretend collision by with different app id and app token
-	existing = s.getFirst(Connection{PublicToken: publicToken})
-	if existing != nil {
-		return nil
 	}
 
 	//create new if doesn't already exist
 	c := Connection{
 		AppID:       appID,
-		AppToken:    token,
-		PublicToken: publicToken,
+		AppToken:    appToken,
+		PublicToken: uuid.New().String(),
 		Settings:    settings,
 	}
 	result := s.db.Create(&c)
@@ -72,7 +49,6 @@ func (s Storage) NewConnectionWithToken(appID, token string, publicToken, settin
 	}
 	return &c
 }
-
 func (s Storage) DeleteConnection(token string) (*Connection, error) {
 	c := Connection{AppToken: token}
 	conn := s.getFirst(c)
