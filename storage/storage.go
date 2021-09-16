@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -34,8 +36,10 @@ func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoi
 		}
 		return existing
 	}
-  
-  existing = s.getFirst(Connection{PublicToken: publicToken})
+
+	// check if connection with this publicToken already exists
+	// for pretend collision by with different app id and app token
+	existing = s.getFirst(Connection{PublicToken: publicToken})
 	if existing != nil {
 		return nil
 	}
@@ -57,6 +61,9 @@ func (s Storage) NewConnectionWithToken(appID, token string, publicToken, endpoi
 func (s Storage) DeleteConnection(token string) (*Connection, error) {
 	c := Connection{AppToken: token}
 	conn := s.getFirst(c)
+	if conn == nil {
+		return nil, errors.New("connection not found")
+	}
 	result := s.db.Delete(&c)
 	return conn, result.Error
 }
@@ -76,7 +83,7 @@ func (s Storage) GetUnequalEndpoint(latestEndpoint string) (ans []*Connection) {
 }
 
 func (s Storage) getFirst(c Connection) *Connection {
-	result := s.db.First(&c)
+	result := s.db.Where(&c).First(&c)
 	if result.Error != nil || result.RowsAffected == 0 {
 		return nil
 	}

@@ -3,10 +3,10 @@ module unifiedpush.org/go/np2p_dbus
 go 1.16
 
 require (
-	github.com/godbus/dbus/v5 v5.0.4 // indirect
-	github.com/google/uuid v1.2.0 // indirect
-	github.com/mattn/go-sqlite3 v1.14.8 // indirect
-	gopkg.in/ini.v1 v1.62.0 // indirect
-	gorm.io/driver/sqlite v1.1.4 // indirect
-	gorm.io/gorm v1.21.14 // indirect
+	github.com/godbus/dbus/v5 v5.0.5
+	github.com/google/uuid v1.3.0
+	github.com/stretchr/testify v1.7.0
+	gopkg.in/ini.v1 v1.63.1
+	gorm.io/driver/sqlite v1.1.5
+	gorm.io/gorm v1.21.15
 )
