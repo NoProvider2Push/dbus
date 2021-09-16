@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,7 @@ func TestInit(t *testing.T) {
 
 	db, err = InitStorage(STORAGE_PATH)
 	assert.NoError(err)
+	defer os.Remove(STORAGE_PATH)
 	assert.NotNil(db)
 }
 
@@ -25,6 +27,7 @@ func TestNewConnectionWithGeneratedToken(t *testing.T) {
 
 	db, err := InitStorage(STORAGE_PATH)
 	assert.NoError(err)
+	defer os.Remove(STORAGE_PATH)
 
 	appID := "app-1"
 	appToken := "apptoken-2"
@@ -49,6 +52,7 @@ func TestNewConnectionCollision(t *testing.T) {
 
 	db, err := InitStorage(STORAGE_PATH)
 	assert.NoError(err)
+	defer os.Remove(STORAGE_PATH)
 
 	appID := "app-1"
 	publicToken := "public-token-2"
@@ -69,6 +73,7 @@ func TestNewConnectionUpdateEndpoint(t *testing.T) {
 
 	db, err := InitStorage(STORAGE_PATH)
 	assert.NoError(err)
+	defer os.Remove(STORAGE_PATH)
 
 	appID := "app-1"
 	appToken := "apptoken-2"
@@ -97,6 +102,7 @@ func TestGetConnectionbyPublic(t *testing.T) {
 
 	db, err := InitStorage(STORAGE_PATH)
 	assert.NoError(err)
+	defer os.Remove(STORAGE_PATH)
 
 	publicToken := "public-token-2"
 
@@ -115,6 +121,7 @@ func TestDeleteConnection(t *testing.T) {
 
 	db, err := InitStorage(STORAGE_PATH)
 	assert.NoError(err)
+	defer os.Remove(STORAGE_PATH)
 
 	appToken := "apptoken-2"
 
