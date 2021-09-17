@@ -35,11 +35,16 @@ func main() {
 }
 
 func handleEndpointSettingsChanges() {
-	for _, i := range store.GetUnequalSettings(config.GetEndpointURL("<token>")) {
+	endpointFormat := config.GetEndpointURL("<token>")
+	for _, i := range store.GetUnequalSettings(endpointFormat) {
 		utils.Log.Debugln("new endpoint format for", i.AppID, i.AppToken)
 		//newconnection updates the endpoint settings when one already exists
-		i = store.NewConnection(i.AppID, i.AppToken, config.GetEndpointURL("<token>"))
-		dbus.NewConnector(i.AppID).NewEndpoint(i.AppToken, config.GetEndpointURL(i.PublicToken))
+		n := store.NewConnection(i.AppID, i.AppToken, endpointFormat)
+		if n == nil || n.Settings != endpointFormat {
+			utils.Log.Debugln("unable to save new endpoint format for", i.AppID, i.AppToken)
+			continue
+		}
+		dbus.NewConnector(n.AppID).NewEndpoint(n.AppToken, config.GetEndpointURL(n.PublicToken))
 	}
 }
 

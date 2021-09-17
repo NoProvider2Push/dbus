@@ -47,28 +47,7 @@ func TestNewConnectionWithGeneratedToken(t *testing.T) {
 	assert.Equal(endpointSettings, conn.Settings)
 }
 
-func TestNewConnectionCollision(t *testing.T) {
-	assert := assert.New(t)
-
-	db, err := InitStorage(STORAGE_PATH)
-	assert.NoError(err)
-	defer os.Remove(STORAGE_PATH)
-
-	appID := "app-1"
-	publicToken := "public-token-2"
-	endpoint := "<endpoint>"
-
-	// create connection
-	conn := db.NewConnectionWithToken(appID, "app-token-1", publicToken, endpoint)
-	assert.NotNil(conn)
-
-	// collision is nil
-	conn = db.NewConnectionWithToken(appID, "app-token-2", publicToken, endpoint)
-	assert.Nil(conn)
-
-}
-
-func TestNewConnectionUpdateEndpoint(t *testing.T) {
+func TestNewConnectionUpdateSettings(t *testing.T) {
 	assert := assert.New(t)
 
 	db, err := InitStorage(STORAGE_PATH)
@@ -77,24 +56,18 @@ func TestNewConnectionUpdateEndpoint(t *testing.T) {
 
 	appID := "app-1"
 	appToken := "apptoken-2"
-	publicToken := "public-token-2"
-	oldEndpointSettings := "endpoint-1"
-	newEndpointSettings := "endpoint-2"
+	oldSettings := "endpoint-1"
+	newSettings := "endpoint-2"
 
 	// create connection
-	conn := db.NewConnectionWithToken(appID, appToken, publicToken, oldEndpointSettings)
+	conn := db.NewConnection(appID, appToken, oldSettings)
 	assert.NotNil(conn)
-	conn = db.getFirst(Connection{AppID: appID, AppToken: appToken})
-	assert.NotNil(conn)
-	assert.Equal(oldEndpointSettings, conn.Settings)
+	assert.Equal(oldSettings, conn.Settings)
 
-	// save new endpoint on connection
-	db.NewConnectionWithToken(appID, appToken, publicToken, newEndpointSettings)
+	// save new settings on connection
+	conn = db.NewConnection(appID, appToken, newSettings)
 	assert.NotNil(conn)
-	conn = db.getFirst(Connection{AppID: appID, AppToken: appToken})
-	assert.NotNil(conn)
-	assert.Equal(newEndpointSettings, conn.Settings)
-
+	assert.Equal(newSettings, conn.Settings)
 }
 
 func TestGetConnectionbyPublic(t *testing.T) {
@@ -104,15 +77,14 @@ func TestGetConnectionbyPublic(t *testing.T) {
 	assert.NoError(err)
 	defer os.Remove(STORAGE_PATH)
 
-	publicToken := "public-token-2"
-
 	// create multiple connection
-	db.NewConnectionWithToken("appid-1", "apptoken-1", "public-token-1", "<endpoint>")
-	db.NewConnectionWithToken("appid-1", "apptoken-2", publicToken, "<endpoint>")
-	db.NewConnectionWithToken("appid-1", "apptoken-3", "public-token-3", "<endpoint>")
+	db.NewConnection("appid-1", "apptoken-1", "<endpoint>")
+	conn := db.NewConnection("appid-1", "apptoken-2", "<endpoint>")
+	publicToken := conn.PublicToken
+	db.NewConnection("appid-1", "apptoken-3", "<endpoint>")
 
 	// find correct connection by public token
-	conn := db.GetConnectionbyPublic(publicToken)
+	conn = db.GetConnectionbyPublic(publicToken)
 	assert.Equal(publicToken, conn.PublicToken)
 }
 
@@ -126,9 +98,9 @@ func TestDeleteConnection(t *testing.T) {
 	appToken := "apptoken-2"
 
 	// create multiple connection
-	db.NewConnectionWithToken("appid-1", "apptoken-1", "public-token-1", "<endpoint>")
-	db.NewConnectionWithToken("appid-1", appToken, "public-token-2", "<endpoint>")
-	db.NewConnectionWithToken("appid-1", "apptoken-3", "public-token-3", "<endpoint>")
+	db.NewConnection("appid-1", "apptoken-1", "<endpoint>")
+	db.NewConnection("appid-1", appToken, "<endpoint>")
+	db.NewConnection("appid-1", "apptoken-3", "<endpoint>")
 
 	// find correct connection by app token to delete
 	conn, err := db.DeleteConnection(appToken)
