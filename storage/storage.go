@@ -26,6 +26,10 @@ type Storage struct {
 	db *gorm.DB
 }
 
+func (s Storage) DB() *gorm.DB {
+	return s.db
+}
+
 func (s Storage) NewConnection(appID, appToken string, settings string) *Connection {
 	existing := s.getFirst(Connection{AppID: appID, AppToken: appToken})
 	if existing != nil {
@@ -49,6 +53,7 @@ func (s Storage) NewConnection(appID, appToken string, settings string) *Connect
 	}
 	return &c
 }
+
 func (s Storage) DeleteConnection(token string) (*Connection, error) {
 	c := Connection{AppToken: token}
 	conn := s.getFirst(c)
