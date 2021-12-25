@@ -31,7 +31,11 @@ func (s Storage) DB() *gorm.DB {
 }
 
 func (s Storage) NewConnection(appID, appToken string, settings string) *Connection {
-	existing := s.getFirst(Connection{AppID: appID, AppToken: appToken})
+	return s.NewConnectionFull(appID, appToken, uuid.New().String(), settings)
+}
+
+func (s Storage) NewConnectionFull(appID, appToken, pubToken, settings string) *Connection {
+	existing := s.GetFirst(Connection{AppID: appID, AppToken: appToken})
 	if existing != nil {
 		existing.Settings = settings
 		if err := s.db.Save(existing).Error; err != nil {
@@ -44,7 +48,7 @@ func (s Storage) NewConnection(appID, appToken string, settings string) *Connect
 	c := Connection{
 		AppID:       appID,
 		AppToken:    appToken,
-		PublicToken: uuid.New().String(),
+		PublicToken: pubToken,
 		Settings:    settings,
 	}
 	result := s.db.Create(&c)
@@ -56,7 +60,7 @@ func (s Storage) NewConnection(appID, appToken string, settings string) *Connect
 
 func (s Storage) DeleteConnection(token string) (*Connection, error) {
 	c := Connection{AppToken: token}
-	conn := s.getFirst(c)
+	conn := s.GetFirst(c)
 	if conn == nil {
 		return nil, errors.New("connection not found")
 	}
@@ -66,7 +70,7 @@ func (s Storage) DeleteConnection(token string) (*Connection, error) {
 
 func (s Storage) GetConnectionbyPublic(publicToken string) *Connection {
 	c := Connection{PublicToken: publicToken}
-	return s.getFirst(c)
+	return s.GetFirst(c)
 }
 
 func (s Storage) GetUnequalSettings(latestSettings string) (ans []*Connection) {
@@ -78,7 +82,7 @@ func (s Storage) GetUnequalSettings(latestSettings string) (ans []*Connection) {
 
 }
 
-func (s Storage) getFirst(c Connection) *Connection {
+func (s Storage) GetFirst(c Connection) *Connection {
 	result := s.db.Where(&c).First(&c)
 	if result.Error != nil || result.RowsAffected == 0 {
 		return nil
