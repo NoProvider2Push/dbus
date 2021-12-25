@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - uses: docker://archlinux:base-devel
-      with: 
-        args: make arch-container-init
+    - run: make build-docker
     - name: Release
       uses: svenstaro/upload-release-action@v2
       with:
