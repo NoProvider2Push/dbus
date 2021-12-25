@@ -44,7 +44,7 @@ type Logger struct {
 }
 
 func (Logger) Debugln(inps ...interface{}) {
-	if os.Getenv("UP_NP2P_DEBUG") == "true" || strings.HasPrefix(os.Args[0], "/tmp/go-build") {
+	if os.Getenv("DEBUG") == "true" || strings.HasPrefix(os.Args[0], "/tmp/go-build") {
 		log.Println(inps...)
 	}
 }
