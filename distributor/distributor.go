@@ -89,7 +89,7 @@ type Connector struct {
 	obj dbus.BusObject
 }
 
-func (c Connector) Message(token, contents, id string) error {
+func (c Connector) Message(token string, contents []byte, id string) error {
 	return c.obj.Call("org.unifiedpush.Connector1.Message", dbus.FlagNoReplyExpected, token, contents, id).Err
 }
 

@@ -78,7 +78,7 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(202)
 		//implement 429 counter
 
-		_ = dbus.NewConnector(conn.AppID).Message(conn.AppToken, string(body), "") //TODO errors
+		_ = dbus.NewConnector(conn.AppID).Message(conn.AppToken, body, "") //TODO errors
 		utils.Log.Infoln("MESSAGE", conn.AppID, conn.AppToken, "from", r.RemoteAddr)
 
 	} else {
